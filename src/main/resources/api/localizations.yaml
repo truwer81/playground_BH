@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  description: Optional multiline or single-line description in [CommonMark](http://commonmark.org/help/) or HTML.
+  version: 1.0.0
+tags:
+  - name: LocalizationsTag
+paths:
+  /localizations:
+    get:
+      tags:
+        - LocalizationsTag
+      summary: "Zwraca listę lokalizacji"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: # w przypadku listy obiektów określa się array
+                type: array
+                items:
+                  $ref: '#/components/schemas/Localization'
+    post:
+      tags:
+        - LocalizationsTag
+      summary: "Tworzy lokalizację"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocalizationCreate'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Localization'
+  /localizations/{id}:
+    get:
+      tags:
+        - LocalizationsTag
+      summary: "Zwraca pojedynczą lokalizację"
+      parameters: # określa parametry zapytania do API (tutaj o id)
+        - in: path      # path/header/cookie/query/body(bez GET/DELETE)
+          name: id
+          required: true
+          schema: # typ parametru zapytania
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Localization'
+components:
+  schemas:
+    Localization:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    LocalizationCreate:
+      type: object
+      properties:
+        name:
+          type: string
