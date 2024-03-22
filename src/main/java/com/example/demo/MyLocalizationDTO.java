@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LocalizationDTO {
+public class MyLocalizationDTO {
     String name;
 }

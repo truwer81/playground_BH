@@ -29,7 +29,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LocalizationCreate'
+              $ref: '#/components/schemas/Localization'
       responses:
         '201':
           description: CREATED
@@ -64,10 +64,5 @@ components:
         id:
           type: integer
           format: int64
-        name:
-          type: string
-    LocalizationCreate:
-      type: object
-      properties:
         name:
           type: string
