@@ -101,6 +101,7 @@
                             <generatorName>spring</generatorName>
                             <apiPackage>${project.groupId}.openapi.localizations</apiPackage>
                             <modelPackage>${project.groupId}.openapi.localizations.model</modelPackage>
+                            <modelNameSuffix>DTO</modelNameSuffix>
                             <configOptions>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <sourceFolder>src/java/main</sourceFolder>
