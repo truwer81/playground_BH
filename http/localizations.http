@@ -1,0 +1,12 @@
+GET http://localhost:8080/localizations
+
+###
+GET http://localhost:8080/localizations/30
+
+###
+POST http://localhost:8080/localizations
+Content-Type: application/json
+
+{
+  "name": "test-001"
+}
