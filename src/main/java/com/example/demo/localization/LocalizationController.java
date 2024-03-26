@@ -6,7 +6,6 @@ import com.example.openapi.localizations.model.PageOfLocalizationDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +20,7 @@ public class LocalizationController implements LocalizationsApi {
 
     @Override
     public ResponseEntity<PageOfLocalizationDTO> localizationsGet(Integer pageNum, Integer size) {
-        var pageable = PageRequest.of(pageNum, size);
-        var page = localizationService.getAllLocalizations(pageable);
+        var page = localizationService.getAllLocalizations(pageNum, size);
         var pageDTO = localizationMapper.asPageDTO(page);
         return ResponseEntity.ok(pageDTO);
     }
@@ -30,7 +28,7 @@ public class LocalizationController implements LocalizationsApi {
     @Override
     public ResponseEntity<LocalizationDTO> localizationsIdGet(Long id) throws Exception {
         var localizationDTO = localizationService.getLocalization(id);
-        if (localizationDTO == null||localizationDTO.getName().isBlank()) {
+        if (localizationDTO == null || localizationDTO.getName().isBlank()) {
             throw new EntityNotFoundException("Lokalizacja " + id + " w bazie danych jest błędna lub pusta.");
         }
         return ResponseEntity.status(HttpStatus.OK)
