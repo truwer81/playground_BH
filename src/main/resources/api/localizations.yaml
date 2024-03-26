@@ -10,16 +10,27 @@ paths:
     get:
       tags:
         - LocalizationsTag
-      summary: "Zwraca listę lokalizacji"
+      summary: "Zwraca paginowaną listę lokalizacji"
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+          description: Numer strony
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 20
+          description: Liczba elementów na stronie
       responses:
         '200':
-          description: OK
+          description: Paginowana lista lokalizacji
           content:
             application/json:
-              schema: # w przypadku listy obiektów określa się array
-                type: array
-                items:
-                  $ref: '#/components/schemas/Localization'
+              schema:
+                $ref: '#/components/schemas/PageOfLocalization'
     post:
       tags:
         - LocalizationsTag
@@ -66,3 +77,23 @@ components:
           format: int64
         name:
           type: string
+          maxLength: 50
+    PageOfLocalization:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Localization'
+        totalPages:
+          type: integer
+          example: 1
+        totalElements:
+          type: integer
+          example: 5
+        size:
+          type: integer
+          example: 5
+        number:
+          type: integer
+          example: 0

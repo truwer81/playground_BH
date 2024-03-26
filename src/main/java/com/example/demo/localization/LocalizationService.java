@@ -1,36 +1,33 @@
 package com.example.demo.localization;
 
-import com.example.openapi.localizations.model.LocalizationDTO;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class LocalizationService {
 
     private final LocalizationRepository localizationRepository;
-    private final LocalizationMapper localizationMapper; // todo move to the controller, services should return entities, not DTOs
 
-    public LocalizationDTO localizationsPost(String name) { // todo rename create
+    public Localization createLocalization(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Nieprawidłowa nazwa lokalizacji: " + name);
         }
         var localization = new Localization(null, name);
-        return localizationMapper.asDTO(localizationRepository.save(localization));
+        return localizationRepository.save(localization);
     }
 
-    public List<LocalizationDTO> localizationsGet() { // todo rename getAll
-        List<Localization> localizations = localizationRepository.findAll();
-        return localizationMapper.asDTO(localizations);
+    public Page<Localization> getAllLocalizations(Pageable pageable) {
+        return localizationRepository.findAll(pageable);
     }
 
-    public LocalizationDTO localizationsIdGet(Long id) { // todo rename get
-        Localization localization = localizationRepository
+    public Localization getLocalization(Long id) {
+        return localizationRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("Nie ma lokalizacji o id: " + id));
-        return localizationMapper.asDTO(localization);
+                .orElseThrow(() -> new EntityNotFoundException("Nie ma lokalizacji o id: " + id));
     }
 
 }

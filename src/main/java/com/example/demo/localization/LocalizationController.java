@@ -2,41 +2,47 @@ package com.example.demo.localization;
 
 import com.example.openapi.localizations.LocalizationsApi;
 import com.example.openapi.localizations.model.LocalizationDTO;
+import com.example.openapi.localizations.model.PageOfLocalizationDTO;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class LocalizationController implements LocalizationsApi {
 
     private final LocalizationService localizationService;
-
-    // todo handle exceptions -> create a class annotated with @RestControllerAdvice
+    private final LocalizationMapper localizationMapper;
 
     @Override
-    public ResponseEntity<List<LocalizationDTO>> localizationsGet() throws Exception {
-        // todo use 'var'
-        List<LocalizationDTO> localizationsDTO = localizationService.localizationsGet();
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(localizationsDTO);
+    public ResponseEntity<PageOfLocalizationDTO> localizationsGet(Integer pageNum, Integer size) {
+        var pageable = PageRequest.of(pageNum, size);
+        var page = localizationService.getAllLocalizations(pageable);
+        var pageDTO = localizationMapper.asPageDTO(page);
+        return ResponseEntity.ok(pageDTO);
     }
 
     @Override
-    public ResponseEntity<LocalizationDTO> localizationsIdGet(@PathVariable Long id) throws Exception { // todo remove @PathVariable - it is unnecessary
-        // todo add pagination https://www.baeldung.com/rest-api-pagination-in-spring
-        LocalizationDTO localizationDTO = localizationService.localizationsIdGet(id);
+    public ResponseEntity<LocalizationDTO> localizationsIdGet(Long id) throws Exception {
+        var localizationDTO = localizationService.getLocalization(id);
+        if (localizationDTO == null||localizationDTO.getName().isBlank()) {
+            throw new EntityNotFoundException("Lokalizacja " + id + " w bazie danych jest błędna lub pusta.");
+        }
         return ResponseEntity.status(HttpStatus.OK)
-                .body(localizationDTO);
+                .body(localizationMapper.asDTO(localizationDTO));
     }
 
     @Override
-    public ResponseEntity<LocalizationDTO> localizationsPost(LocalizationDTO localizationDTO) throws Exception { // todo maxLength=50 in openid -> exception -> @RestControllerAdvice -> 400
-        LocalizationDTO createdLocalization = localizationService.localizationsPost(localizationDTO.getName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdLocalization);
+    public ResponseEntity<LocalizationDTO> localizationsPost(@Valid LocalizationDTO localizationDTO) throws Exception {
+        if (localizationDTO.getName().length() > 50) {
+            throw new IllegalArgumentException("Nazwa nie może przekraczać 50 znaków.");
+        }
+        var createdLocalization = localizationService.createLocalization(localizationDTO.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(localizationMapper.asDTO(createdLocalization));
     }
 }
